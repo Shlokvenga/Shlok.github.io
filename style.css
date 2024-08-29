@@ -355,3 +355,10 @@
         }
     }
     
+/* Hide the hero image on small screens */
+@media (max-width: 768px) {
+    .hero-image {
+        display: none;
+    }
+}
+
