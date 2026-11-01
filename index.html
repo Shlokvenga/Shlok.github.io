@@ -1,161 +1,953 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shlok Vengurlekar</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shlok Vengurlekar</title>
+  <meta name="description" content="Shlok Vengurlekar — Automation and Robotics undergraduate. Robotic arm design, embedded systems, ROS2 and full-stack software.">
+  <meta name="theme-color" content="#0a0a0b">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <!-- Link previews (LinkedIn, WhatsApp, X…). Scrapers need absolute URLs. -->
+  <link rel="canonical" href="https://shlok.vengurlekar.co.in/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://shlok.vengurlekar.co.in/">
+  <meta property="og:site_name" content="Shlok Vengurlekar">
+  <meta property="og:title" content="Shlok Vengurlekar — Automation &amp; Robotics">
+  <meta property="og:description" content="Robotic arm design, embedded systems, ROS2 and full-stack software. Selected work, about and contact.">
+  <meta property="og:image" content="https://shlok.vengurlekar.co.in/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Shlok Vengurlekar, Automation and Robotics, beside a white robotic arm and a tile labelled Work">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shlok Vengurlekar — Automation &amp; Robotics">
+  <meta name="twitter:description" content="Robotic arm design, embedded systems, ROS2 and full-stack software.">
+  <meta name="twitter:image" content="https://shlok.vengurlekar.co.in/og-image.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --ink: #f2f1ee;
+      --muted: #8a8a8f;
+      --soft: #c9c8c4;
+      --line: #1f1f22;
+      --paper: #efeeea;
+      --accent: #ff5a1f;
+      --sans: "Geist", system-ui, sans-serif;
+      --mono: "Geist Mono", ui-monospace, monospace;
+      --gutter: clamp(16px, 4vw, 48px);
+    }
+    /* Sections after the intro sit on the paper colour the camera zooms into */
+    .light {
+      --bg: var(--paper); --ink: #141416; --muted: #6b6b70; --soft: #3a3a3e; --line: #d9d6ce;
+      background: var(--bg); color: var(--ink);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--bg); }
+    html.lenis, html.lenis body { height: auto; }
+    .lenis.lenis-smooth { scroll-behavior: auto !important; }
+    body {
+      margin: 0; background: var(--bg); color: var(--ink);
+      font: 400 16px/1.55 var(--sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .label { font: 400 12px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+    /* Nav */
+    header {
+      position: fixed; inset: 0 0 auto; z-index: 20;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 64px; padding: 0 var(--gutter);
+      color: #f2f1ee; transition: color .3s, background-color .3s;
+    }
+    header.on-light { color: #141416; }
+    /* Past the intro, content scrolls under the nav, so give it a frosted backing */
+    header.solid { background: rgba(10,10,11,.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+    header.solid.on-light { background: rgba(239,238,234,.78); }
+    .logo { font: 600 18px var(--sans); letter-spacing: -0.02em; }
+    .logo span { color: var(--accent); }
+    header nav { display: flex; gap: 28px; }
+    header nav a { font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+    header nav a:hover { color: var(--accent); }
+
+    /* ---------- Intro: the arm ---------- */
+    #story { position: relative; height: 460vh; }
+    .stage {
+      position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
+      background: radial-gradient(ellipse 60% 50% at 50% 62%, #19191c 0%, var(--bg) 70%);
+    }
+    #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 1.2s ease; }
+    #gl.ready { opacity: 1; }
+    .handoff { position: absolute; inset: 0; background: var(--paper); opacity: 0; pointer-events: none; }
+
+    .hero {
+      position: absolute; inset: 64px 0 0; padding: 0 var(--gutter) clamp(28px, 6vh, 64px);
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: clamp(16px, 2.4vh, 28px);
+      isolation: isolate; pointer-events: none;
+    }
+    .hero::before {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      left: 0; top: -64px; bottom: 0; width: 55%;
+      background: linear-gradient(to right, rgba(10,10,11,.7) 20%, rgba(10,10,11,0));
+    }
+    .hero h1 { margin: 0; font: 600 clamp(48px, 6.4vw, 104px)/.92 var(--sans); letter-spacing: -0.045em; }
+    .hero h1 span { display: block; }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero .label { color: var(--muted); }
+    .scroll-hint { position: absolute; right: var(--gutter); bottom: clamp(28px, 6vh, 64px); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .scroll-hint i { display: block; width: 1px; height: 40px; background: linear-gradient(var(--muted), transparent); animation: drip 2s ease-in-out infinite; transform-origin: top; }
+    @keyframes drip { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+    /* ---------- Work: horizontal track with the AMR lane underneath ---------- */
+    #work { position: relative; }
+    .work-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: flex; flex-direction: column; }
+    .work-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding: clamp(84px, 12vh, 120px) var(--gutter) clamp(20px, 3vh, 32px); }
+    .work-head h2 { margin: 12px 0 0; font: 600 clamp(40px, 6vw, 88px)/.95 var(--sans); letter-spacing: -0.045em; }
+    .work-head h2 span { color: var(--accent); }
+    .counter { font: 400 14px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+    .counter b { color: var(--ink); font-weight: 400; }
+    .track { display: flex; gap: clamp(14px, 2vw, 24px); padding: 0 var(--gutter); will-change: transform; }
+    .card {
+      flex: 0 0 min(500px, 82vw); display: flex; flex-direction: column;
+      background: #fbfaf7; border: 1px solid var(--line); border-radius: 18px; overflow: hidden;
+    }
+    .card-art {
+      height: clamp(130px, 22vh, 220px); padding: 18px 22px; color: var(--art-ink, #fff);
+      background: radial-gradient(circle at 80% 15%, rgba(255,255,255,.25), transparent 55%), linear-gradient(160deg, var(--c1), var(--c2));
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .card-art .row { display: flex; justify-content: space-between; font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .85; }
+    .card-art h3 { margin: 0; font: 600 clamp(30px, 3.2vw, 46px)/1 var(--sans); letter-spacing: -0.04em; }
+    .card-body { padding: 20px 22px 24px; }
+    .card-body .kicker { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+    .card-body p.blurb { margin: 0 0 16px; font-size: 15px; line-height: 1.5; color: var(--soft); }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .chips li { font: 400 12px var(--mono); padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+    .lane { position: relative; flex: 1; min-height: 120px; }
+    #amr { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .amr-toast {
+      position: absolute; left: 50%; top: 8%; transform: translateX(-50%);
+      font: 400 12px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+      padding: 7px 12px; border-radius: 999px; background: var(--ink); color: var(--bg);
+      opacity: 0; visibility: hidden; pointer-events: none; white-space: nowrap;
+    }
+
+    /* ---------- About ---------- */
+    #about { padding: clamp(96px, 14vw, 180px) var(--gutter); border-top: 1px solid var(--line); }
+    .about { display: grid; grid-template-columns: 1fr 2.2fr; gap: clamp(32px, 6vw, 96px); max-width: 1240px; margin: 0 auto; }
+    .about .lead { margin: 0 0 64px; font: 400 clamp(24px, 3vw, 38px)/1.25 var(--sans); letter-spacing: -0.02em; }
+    .about .lead em { font-style: normal; color: var(--muted); }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin: 0 0 64px; padding: 0; list-style: none; }
+    .stats b { display: block; font: 600 clamp(36px, 4vw, 56px)/1 var(--sans); letter-spacing: -0.04em; margin-bottom: 10px; }
+    .stats span { display: block; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .caps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; border-top: 1px solid var(--line); padding-top: 28px; }
+    .caps ul { list-style: none; margin: 14px 0 0; padding: 0; color: var(--soft); font-size: 15px; }
+    .caps li { padding: 3px 0; }
+
+    /* ---------- Contact ---------- */
+    #contact { padding: clamp(120px, 16vw, 220px) var(--gutter) clamp(72px, 10vw, 120px); }
+    #contact h2 { margin: 18px 0 40px; font: 600 clamp(56px, 11vw, 176px)/.9 var(--sans); letter-spacing: -0.05em; }
+    #contact h2 span { color: var(--accent); }
+    .email { font: 500 clamp(22px, 3vw, 40px) var(--sans); letter-spacing: -0.02em; border-bottom: 2px solid var(--accent); padding-bottom: 4px; }
+    .email:hover { color: var(--accent); }
+    .contact-foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-top: 56px; }
+    .socials { display: flex; flex-wrap: wrap; gap: 12px; }
+    .socials a {
+      display: inline-flex; align-items: center; gap: 10px;
+      font: 500 clamp(17px, 1.6vw, 20px) var(--sans); letter-spacing: -0.01em;
+      padding: 12px 20px; border: 1px solid #2e2e33; border-radius: 999px;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .socials a:hover { border-color: var(--accent); color: var(--accent); }
+    .contact-foot .label { font-size: 13px; }
+
+    footer { display: flex; justify-content: space-between; gap: 16px; padding: 24px var(--gutter); border-top: 1px solid var(--line); }
+
+    @media (max-width: 960px) {
+      .stats, .caps { grid-template-columns: 1fr 1fr; row-gap: 36px; }
+    }
+    @media (max-width: 760px) {
+      header nav a.hide-sm { display: none; }
+      .scroll-hint { display: none; }
+      .hero { justify-content: flex-end; }
+      .hero::before { left: 0; right: 0; top: auto; width: auto; height: 42vh; background: linear-gradient(to top, rgba(10,10,11,.85) 40%, rgba(10,10,11,0)); }
+      .work-head { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .about { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    } }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
 </head>
 <body>
+  <header>
+    <a href="#top" class="logo">Shlok<span>.</span></a>
+    <nav aria-label="Main">
+      <a href="#work">Work</a>
+      <a href="#about" class="hide-sm">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
 
-    <!-- Particle background -->
-    <div id="particles-js"></div>
-
-    <div class="container">
-        <header>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="about me.html">About</a></li>
-                    <li><a href="mystuff.html">My Stuff</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </nav>
-        </header>
-        <main class="hero">
-            <div class="hero-content">
-                <h2>Hello, I am</h2>
-                <h1><span class="highlight">Shlok Vengurlekar</span></h1>
-                <h4>And I'm a student at<br></h4><h2><span class="highlight">Kle Technological University</span></h2>
-                <a href="about me.html" class="btn">About Me</a>
-            </div>
-        </main>
+  <main id="top">
+    <div id="story">
+      <div class="stage">
+        <canvas id="gl" aria-hidden="true"></canvas>
+        <div class="hero">
+          <span class="label">Automation &amp; Robotics</span>
+          <h1><span>Shlok</span><span>Vengurlekar<em>.</em></span></h1>
+          <div class="scroll-hint"><span class="label">Scroll</span><i></i></div>
+        </div>
+        <div class="handoff"></div>
+      </div>
     </div>
 
-        <!-- Include Particles.js -->
-        <script src="particles.js"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                particlesJS("particles-js", {
-                    "particles": {
-                        "number": {
-                            "value": 80,
-                            "density": {
-                                "enable": true,
-                                "value_area": 800
-                            }
-                        },
-                        "color": {
-                            "value": "#000"
-                        },
-                        "shape": {
-                            "type": "circle",
-                            "stroke": {
-                                "width": 0,
-                                "color": "#000"
-                            },
-                            "polygon": {
-                                "nb_sides": 5
-                            },
-                            "image": {
-                                "src": "img/github.svg",
-                                "width": 100,
-                                "height": 100
-                            }
-                        },
-                        "opacity": {
-                            "value": 0.5,
-                            "random": false,
-                            "anim": {
-                                "enable": false,
-                                "speed": 1,
-                                "opacity_min": 0.1,
-                                "sync": false
-                            }
-                        },
-                        "size": {
-                            "value": 3,
-                            "random": true,
-                            "anim": {
-                                "enable": false,
-                                "speed": 40,
-                                "size_min": 0.1,
-                                "sync": false
-                            }
-                        },
-                        "line_linked": {
-                            "enable": true,
-                            "distance": 150,
-                            "color": "#fff",
-                            "opacity": 0.4,
-                            "width": 1
-                        },
-                        "move": {
-                            "enable": true,
-                            "speed": 6,
-                            "direction": "none",
-                            "random": false,
-                            "straight": false,
-                            "out_mode": "out",
-                            "bounce": false,
-                            "attract": {
-                                "enable": false,
-                                "rotateX": 600,
-                                "rotateY": 1200
-                            }
-                        }
-                    },
-                    "interactivity": {
-                        "detect_on": "canvas",
-                        "events": {
-                            "onhover": {
-                                "enable": true,
-                                "mode": "repulse"
-                            },
-                            "onclick": {
-                                "enable": true,
-                                "mode": "push"
-                            },
-                            "resize": true
-                        },
-                        "modes": {
-                            "grab": {
-                                "distance": 400,
-                                "line_linked": {
-                                    "opacity": 1
-                                }
-                            },
-                            "bubble": {
-                                "distance": 400,
-                                "size": 40,
-                                "duration": 2,
-                                "opacity": 8,
-                                "speed": 3
-                            },
-                            "repulse": {
-                                "distance": 200,
-                                "duration": 0.4
-                            },
-                            "push": {
-                                "particles_nb": 4
-                            },
-                            "remove": {
-                                "particles_nb": 2
-                            }
-                        }
-                    },
-                    "retina_detect": true
-                });
-    
-                var count_particles = document.querySelector('.js-count-particles');
-                function update() {
-                    count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
-                    requestAnimationFrame(update);
-                }
-                update();
-            });
-        </script>
+    <div class="light">
+      <section id="work" aria-label="Selected work">
+        <div class="work-pin">
+          <div class="work-head">
+            <div>
+              <span class="label">Selected work</span>
+              <h2>Things I've built<span>.</span></h2>
+            </div>
+            <span class="counter"><b id="count">01</b> / <span id="total">05</span></span>
+          </div>
+          <div class="track" id="track"></div>
+          <div class="lane"><canvas id="amr" aria-hidden="true"></canvas><span class="amr-toast" id="amr-toast">Goal reached ✓</span></div>
+        </div>
+      </section>
 
+      <section id="about">
+        <div class="about">
+          <span class="label">About</span>
+          <div>
+            <p class="lead">I'm Shlok Vengurlekar, an Automation and Robotics undergrad in Hubli, India. <em>I like the problems that cross the line between mechanism, electronics and code.</em></p>
+            <ul class="stats">
+              <li><b>8.8</b><span>CGPA out of 10</span></li>
+              <li><b>2028</b><span>B.E. Automation &amp; Robotics, KLE Technological University</span></li>
+              <li><b>2nd</b><span>IIT Bombay Techfest 2025, zonal round</span></li>
+              <li><b>IEEE</b><span>Co-founder &amp; Secretary, student branch chapter</span></li>
+            </ul>
+            <div class="caps">
+              <div><span class="label">Programming</span><ul><li>Python</li><li>C / C++</li><li>MATLAB</li><li>ROS2</li></ul></div>
+              <div><span class="label">CAD &amp; Simulation</span><ul><li>SolidWorks</li><li>Fusion 360</li><li>Simulink</li><li>FEA</li></ul></div>
+              <div><span class="label">Hardware &amp; Control</span><ul><li>Raspberry Pi</li><li>Arduino</li><li>Omron PLC</li><li>Control systems</li></ul></div>
+              <div><span class="label">Certified</span><ul><li>SOLIDWORKS CSWPA-CD</li><li>3DEXPERIENCE Associate</li><li>MATLAB &amp; Simulink Onramp</li><li>ROS2 for Beginners</li></ul></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section id="contact">
+      <span class="label">Contact</span>
+      <h2>Let's build<br>something<span>.</span></h2>
+      <a class="email" id="email" href="#"></a>
+      <div class="contact-foot">
+        <span class="label">Open to internships and collaborations</span>
+        <div class="socials" id="socials"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span class="label">© <span id="year"></span> Shlok Vengurlekar</span>
+    <a href="#top" class="label">Top ↑</a>
+  </footer>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+    // ---------- Content ----------
+    const PROJECTS = [
+      {
+        title: 'TextileConnect', kicker: 'Platform · In progress', stat: '16 tables',
+        blurb: "A digital chain of custody for India's textile MSMEs: QR-verified transfers replace oral yarn contracts and handwritten gate passes. Flutter app and NestJS/PostgreSQL backend, 6 user roles, role-based access and an immutable audit trail.",
+        tags: ['Flutter', 'NestJS', 'PostgreSQL', 'AWS'], colors: ['#ff6a2b', '#2a0d04'],
+      },
+      {
+        title: 'Pick & Place Arm', kicker: '2-DOF · Mechanical design', stat: '±0.1 mm',
+        blurb: 'A revolute planar arm for desktop SMT assembly. Kinematics, harmonic-drive sizing, static and modal FEA. All 18 quantitative specs met, in Aluminium 6061-T6 chosen with Ashby indices. Fabrication-ready.',
+        tags: ['SolidWorks', 'MATLAB', 'FEA'], colors: ['#d9dde3', '#3a4048'],
+      },
+      {
+        title: 'Person Follower Bot', kicker: 'Mobile robot · Vision', stat: 'Real-time',
+        blurb: 'A mobile robot that detects and follows a person using OpenCV on a Raspberry Pi, driving ESC-controlled DC motors from a LiPo with buck-regulated rails.',
+        tags: ['Raspberry Pi', 'OpenCV', 'Python'], colors: ['#4f8cff', '#07122b'],
+      },
+      {
+        title: 'Industrial AMR', kicker: 'ROS2 · In progress', stat: 'SLAM + Nav2',
+        blurb: 'A modular autonomous mobile robot for industrial material handling. SLAM for mapping and localisation, Nav2 for path planning and obstacle avoidance.',
+        tags: ['ROS2', 'SLAM', 'Nav2'], colors: ['#2fbf8f', '#05231a'],
+      },
+      {
+        title: 'Depth from RGB', kicker: 'Perception · AI', stat: '1 camera',
+        blurb: 'A low-cost depth camera alternative: depth maps from a single RGB camera using an AI model, without stereo or time-of-flight hardware.',
+        tags: ['Python', 'Depth model', 'Computer vision'], colors: ['#a77bff', '#160b2e'],
+      },
+    ];
+    const CONTACT = {
+      email: 'Shlok@vengurlekar.co.in',
+      links: [['LinkedIn', 'https://linkedin.com/in/shlok-vengurlekar'], ['GitHub', 'https://github.com/Shlokvenga']],
+    };
+
+    const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const pad = n => String(n).padStart(2, '0');
+    const isLight = hex => parseInt(hex.slice(1, 3), 16) > 200 && parseInt(hex.slice(5, 7), 16) > 200;
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+    console.log('%cShlok%c.', 'font: 600 40px Geist, sans-serif; color: #f2f1ee; background: #0a0a0b; padding: 6px 0 6px 12px', 'font: 600 40px Geist, sans-serif; color: #ff5a1f; background: #0a0a0b; padding: 6px 12px 6px 0');
+    console.log(`Hi, fellow engineer. The arm runs on two-link inverse kinematics and the AMR on scroll velocity.\nTry clicking the AMR. Say hello: ${CONTACT.email}`);
+    document.getElementById('total').textContent = pad(PROJECTS.length);
+    const email = document.getElementById('email');
+    email.href = `mailto:${CONTACT.email}`;
+    email.textContent = CONTACT.email;
+    document.getElementById('socials').innerHTML = CONTACT.links.map(([n, u]) => `<a href="${u}" target="_blank" rel="noopener">${n} <span aria-hidden="true">↗</span></a>`).join('');
+
+    const trackEl = document.getElementById('track');
+    trackEl.innerHTML = PROJECTS.map((p, i) => `
+      <article class="card">
+        <div class="card-art" style="--c1:${p.colors[0]};--c2:${p.colors[1]};--art-ink:${isLight(p.colors[0]) ? '#141416' : '#fff'}">
+          <div class="row"><span>${pad(i + 1)}</span><span>${esc(p.stat)}</span></div>
+          <h3>${esc(p.title)}</h3>
+        </div>
+        <div class="card-body">
+          <p class="kicker">${esc(p.kicker)}</p>
+          <p class="blurb">${esc(p.blurb)}</p>
+          <ul class="chips">${p.tags.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+        </div>
+      </article>`).join('');
+
+    // ---------- Shared 3D helpers ----------
+    const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+    const smooth = x => { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); };
+
+    function makeRenderer(canvas) {
+      try {
+        const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        r.setPixelRatio(Math.min(devicePixelRatio, 2));
+        r.outputColorSpace = THREE.SRGBColorSpace;
+        r.toneMapping = THREE.ACESFilmicToneMapping;
+        r.toneMappingExposure = 0.95;
+        r.shadowMap.enabled = true;
+        r.shadowMap.type = THREE.PCFSoftShadowMap;
+        return r;
+      } catch (e) { canvas.remove(); return null; }
+    }
+    function makeMaterials() {
+      return {
+        shell: new THREE.MeshPhysicalMaterial({ color: 0xecebe7, roughness: 0.42, metalness: 0, clearcoat: 0.5, clearcoatRoughness: 0.35 }),
+        dark: new THREE.MeshStandardMaterial({ color: 0x18181a, roughness: 0.5, metalness: 0.25 }),
+        metal: new THREE.MeshStandardMaterial({ color: 0x8c8c90, roughness: 0.3, metalness: 1 }),
+        accent: new THREE.MeshStandardMaterial({ color: 0xff5a1f, emissive: 0xff3a00, emissiveIntensity: 0.8 }),
+      };
+    }
+    const mesh = (geo, mat) => {
+      const m = new THREE.Mesh(geo, mat);
+      m.castShadow = true; m.receiveShadow = true;
+      return m;
+    };
+    const cyl = (r1, r2, len, mat, axis = 'y', seg = 64) => {
+      const m = mesh(new THREE.CylinderGeometry(r1, r2, len, seg), mat);
+      if (axis === 'x') m.rotation.z = -Math.PI / 2;
+      if (axis === 'z') m.rotation.x = Math.PI / 2;
+      return m;
+    };
+    // Render only while the canvas is near the viewport
+    function whileVisible(el, fn) {
+      let on = true;
+      new IntersectionObserver(([e]) => { on = e.isIntersecting; }, { rootMargin: '100px' }).observe(el);
+      (function loop() { requestAnimationFrame(loop); if (on) fn(); })();
+    }
+
+    // Monotone cubic (Fritsch–Carlson) keyframe interpolation: C1-smooth, never overshoots,
+    // eases to rest wherever a value holds.
+    function track(keys) {
+      const n = keys.length, dim = keys[0].v.length;
+      const m = keys.map(() => new Array(dim).fill(0));
+      for (let d = 0; d < dim; d++) {
+        const del = [];
+        for (let k = 0; k < n - 1; k++) del.push((keys[k + 1].v[d] - keys[k].v[d]) / (keys[k + 1].t - keys[k].t));
+        for (let k = 1; k < n - 1; k++) m[k][d] = del[k - 1] * del[k] <= 0 ? 0 : (del[k - 1] + del[k]) / 2;
+        for (let k = 0; k < n - 1; k++) {
+          if (del[k] === 0) { m[k][d] = m[k + 1][d] = 0; continue; }
+          const a = m[k][d] / del[k], b = m[k + 1][d] / del[k], s = a * a + b * b;
+          if (s > 9) { const tau = 3 / Math.sqrt(s); m[k][d] = tau * a * del[k]; m[k + 1][d] = tau * b * del[k]; }
+        }
+      }
+      return (t, out) => {
+        if (t <= keys[0].t) { keys[0].v.forEach((v, d) => out[d] = v); return out; }
+        if (t >= keys[n - 1].t) { keys[n - 1].v.forEach((v, d) => out[d] = v); return out; }
+        let k = 0;
+        while (keys[k + 1].t < t) k++;
+        const k0 = keys[k], k1 = keys[k + 1], h = k1.t - k0.t, s = (t - k0.t) / h;
+        const s2 = s * s, s3 = s2 * s;
+        const h00 = 2 * s3 - 3 * s2 + 1, h10 = s3 - 2 * s2 + s, h01 = -2 * s3 + 3 * s2, h11 = s3 - s2;
+        for (let d = 0; d < dim; d++) out[d] = h00 * k0.v[d] + h10 * h * m[k][d] + h01 * k1.v[d] + h11 * h * m[k + 1][d];
+        return out;
+      };
+    }
+
+    // =====================================================================
+    // Intro: the arm lifts the "Work" tile off its stand and the camera
+    // pushes into its face until the paper colour fills the screen.
+    // =====================================================================
+    const H = 1.05, L1 = 1.7, L2 = 1.55, T = 0.62;            // shoulder height, link lengths, wrist → grip point
+    const TILE = { w: 0.8, h: 1.0, d: 0.05, foot: 0.08, bite: 0.08 };
+    const DOWN = -Math.PI / 2, OPEN = 0.32, SHUT = TILE.d + 0.004;
+
+    // The Work tile waits on a stand behind and to the right
+    const STAND = { x: 1.9, z: -0.6, h: 0.45 };
+    const TILE_TOP = STAND.h + TILE.foot + TILE.h;
+    const GRAB_Y = TILE_TOP - TILE.bite, HOVER_Y = GRAB_Y + 0.75;
+    const PRESENT = [0, 2.85, 1.75];
+
+    const PICK_T = 1.5, ZOOM = [3.0, 4.4], END = 4.6;
+
+    // Arm keys: [x, y, z, toolPitch, faceHeading, grip]
+    const armAt = track([
+      { t: 0,    v: [0.9, 2.55, 1.15, -0.6, 0, OPEN] },
+      { t: 1.0,  v: [STAND.x, HOVER_Y, STAND.z, DOWN, 0, OPEN] },
+      { t: 1.35, v: [STAND.x, GRAB_Y, STAND.z, DOWN, 0, OPEN] },
+      { t: 1.55, v: [STAND.x, GRAB_Y, STAND.z, DOWN, 0, SHUT] },
+      { t: 1.95, v: [STAND.x - 0.3, HOVER_Y + 0.1, STAND.z + 0.3, DOWN, 0, SHUT] },
+      { t: 2.7,  v: [...PRESENT, DOWN, 0, SHUT] },
+    ]);
+    // Camera keys: [theta, phi, dist, targetX, targetY, targetZ, zoom]
+    const TILE_CENTER = [PRESENT[0], PRESENT[1] + TILE.bite - TILE.h / 2, PRESENT[2]];
+    const camAt = track([
+      { t: 0,   v: [0.3, 1.3, 10.5, 0.6, 1.4, 0.3, 0] },
+      { t: 1.3, v: [-0.35, 1.2, 9.5, 0.6, 1.2, 0.5, 0] },
+      { t: 2.7, v: [0.05, 1.42, 6.6, ...TILE_CENTER, 0] },
+      { t: ZOOM[0], v: [0, 1.5, 6.2, ...TILE_CENTER, 0] },
+      { t: ZOOM[1], v: [0, 1.5, 6.2, ...TILE_CENTER, 1] },
+    ]);
+
+    function drawWorkTile(ctx, W, Hh) {
+      ctx.fillStyle = '#efeeea'; ctx.fillRect(0, 0, W, Hh);
+      ctx.fillStyle = '#6b6b70';
+      ctx.font = '400 28px "Geist Mono", monospace';
+      ctx.fillText('SELECTED WORK', 56, 90);
+      ctx.textAlign = 'right'; ctx.fillText(pad(PROJECTS.length), W - 56, 90); ctx.textAlign = 'left';
+      ctx.fillStyle = '#141416';
+      ctx.font = '600 170px Geist, sans-serif';
+      ctx.fillText('Work', 46, Hh - 70);
+      ctx.fillStyle = '#ff5a1f';
+      ctx.fillRect(46 + ctx.measureText('Work').width + 10, Hh - 106, 36, 36);
+    }
+
+    const state = { time: 0 };
+    const armCanvas = document.getElementById('gl');
+    const armRenderer = makeRenderer(armCanvas);
+
+    if (armRenderer) {
+      const renderer = armRenderer;
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x0a0a0b, 11, 21);
+      const camera = new THREE.PerspectiveCamera(32, 1, 0.05, 100);
+      scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+      const key = new THREE.DirectionalLight(0xffffff, 2.0);
+      key.position.set(4, 9, 7);
+      key.castShadow = true;
+      key.shadow.mapSize.set(2048, 2048);
+      Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -4, near: 1, far: 30 });
+      key.shadow.radius = 6;
+      key.shadow.bias = -0.0005;
+      scene.add(key);
+      const rim = new THREE.DirectionalLight(0xffb48a, 2.2);
+      rim.position.set(-6, 5, -6);
+      scene.add(rim);
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.5 }));
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const { shell, dark, metal, accent } = makeMaterials();
+      function drum(r, len) {
+        const g = new THREE.Group();
+        g.add(cyl(r, r, len, shell, 'z'));
+        for (const s of [-1, 1]) {
+          const cap = cyl(r * 0.92, r * 0.92, 0.04, dark, 'z');
+          cap.position.z = s * (len / 2 + 0.02);
+          const hub = cyl(r * 0.42, r * 0.42, 0.03, metal, 'z', 32);
+          hub.position.z = s * (len / 2 + 0.05);
+          g.add(cap, hub);
+        }
+        return g;
+      }
+
+      // ---------- Arm (each link points along +X of its joint frame) ----------
+      const arm = new THREE.Group();
+      scene.add(arm);
+      arm.add(cyl(0.62, 0.66, 0.1, dark).translateY(0.05));
+      arm.add(cyl(0.44, 0.48, 0.55, shell).translateY(0.375));
+      arm.add(cyl(0.445, 0.445, 0.03, dark).translateY(0.52));
+      const led = mesh(new THREE.TorusGeometry(0.47, 0.008, 8, 96), accent);
+      led.rotation.x = Math.PI / 2; led.position.y = 0.11;
+      arm.add(led);
+
+      const turntable = new THREE.Group();
+      turntable.position.y = 0.65;
+      arm.add(turntable);
+      turntable.add(cyl(0.4, 0.42, 0.2, shell).translateY(0.1));
+      turntable.add(cyl(0.405, 0.405, 0.02, dark).translateY(0.2));
+      const housing = mesh(new RoundedBoxGeometry(0.5, 0.36, 0.5, 4, 0.12), shell);
+      housing.position.y = 0.3;
+      turntable.add(housing);
+
+      const shoulder = new THREE.Group();
+      shoulder.position.y = H - 0.65;
+      turntable.add(shoulder);
+      shoulder.add(drum(0.27, 0.56));
+      const upperLink = mesh(new RoundedBoxGeometry(L1 + 0.34, 0.34, 0.3, 6, 0.15), shell);
+      upperLink.position.x = L1 / 2;
+      shoulder.add(upperLink);
+      const upperSeam = mesh(new RoundedBoxGeometry(L1 - 0.4, 0.035, 0.305, 2, 0.015), dark);
+      upperSeam.position.x = L1 / 2;
+      shoulder.add(upperSeam);
+
+      const elbow = new THREE.Group();
+      elbow.position.x = L1;
+      shoulder.add(elbow);
+      elbow.add(drum(0.22, 0.46));
+      const foreLink = mesh(new RoundedBoxGeometry(L2 * 0.62, 0.27, 0.25, 6, 0.12), shell);
+      foreLink.position.x = L2 * 0.31;
+      elbow.add(foreLink);
+      const rollBand = cyl(0.135, 0.135, 0.05, dark, 'x');
+      rollBand.position.x = L2 * 0.63;
+      elbow.add(rollBand);
+      const foreTube = cyl(0.125, 0.12, L2 * 0.38, shell, 'x');
+      foreTube.position.x = L2 * 0.81;
+      elbow.add(foreTube);
+
+      const wrist = new THREE.Group();
+      wrist.position.x = L2;
+      elbow.add(wrist);
+      wrist.add(drum(0.14, 0.3));
+
+      // Tool frame: +X is the tool axis, fingers close along Z, roll spins about X
+      const rollGroup = new THREE.Group();
+      wrist.add(rollGroup);
+      const flange = cyl(0.11, 0.12, 0.12, dark, 'x');
+      flange.position.x = 0.12;
+      rollGroup.add(flange);
+      const flangeRing = cyl(0.122, 0.122, 0.015, metal, 'x');
+      flangeRing.position.x = 0.185;
+      rollGroup.add(flangeRing);
+      const gripBody = mesh(new RoundedBoxGeometry(0.2, 0.2, 0.42, 4, 0.05), dark);
+      gripBody.position.x = 0.29;
+      rollGroup.add(gripBody);
+      const rail = mesh(new RoundedBoxGeometry(0.04, 0.12, 0.4, 2, 0.015), metal);
+      rail.position.x = 0.4;
+      rollGroup.add(rail);
+      const fingers = [-1, 1].map(s => {
+        const f = mesh(new RoundedBoxGeometry(0.3, 0.12, 0.035, 2, 0.012), dark);
+        f.position.x = 0.54;
+        f.userData.side = s;
+        rollGroup.add(f);
+        return f;
+      });
+      // A held tile hangs from its top edge, `bite` above the grip point
+      const tileSocket = new THREE.Object3D();
+      tileSocket.position.x = T - TILE.bite;
+      tileSocket.rotation.z = Math.PI / 2;
+      rollGroup.add(tileSocket);
+
+      // ---------- Stand + Work tile ----------
+      const stand = mesh(new RoundedBoxGeometry(0.9, STAND.h, 0.5, 3, 0.04), dark);
+      stand.position.set(STAND.x, STAND.h / 2, STAND.z);
+      scene.add(stand);
+
+      const maxAniso = renderer.capabilities.getMaxAnisotropy();
+      const CW = 768, CH = 960;
+      function faceTexture(draw) {
+        const c = document.createElement('canvas');
+        c.width = CW; c.height = CH;
+        const tex = new THREE.CanvasTexture(c);
+        tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = maxAniso;
+        const paint = () => { draw(c.getContext('2d'), CW, CH); tex.needsUpdate = true; };
+        paint();
+        document.fonts.ready.then(paint);
+        return tex;
+      }
+      const tile = new THREE.Group();
+      tile.add(mesh(new RoundedBoxGeometry(TILE.w, TILE.h, TILE.d, 2, 0.012).translate(0, -TILE.h / 2, 0),
+        new THREE.MeshStandardMaterial({ color: 0x1c1c1f, roughness: 0.4, metalness: 0.6 })));
+      const faceGeo = new THREE.PlaneGeometry(TILE.w - 0.02, TILE.h - 0.02);
+      const front = new THREE.Mesh(faceGeo, new THREE.MeshPhysicalMaterial({ map: faceTexture(drawWorkTile), roughness: 0.5, clearcoat: 0.6, clearcoatRoughness: 0.25 }));
+      front.position.set(0, -TILE.h / 2, TILE.d / 2 + 0.001);
+      const back = new THREE.Mesh(faceGeo, new THREE.MeshStandardMaterial({ color: 0x141416, roughness: 0.6 }));
+      back.position.set(0, -TILE.h / 2, -TILE.d / 2 - 0.001);
+      back.rotation.y = Math.PI;
+      const foot = mesh(new RoundedBoxGeometry(TILE.w + 0.08, TILE.foot, 0.3, 2, 0.025), dark);
+      foot.position.y = -TILE.h - TILE.foot / 2;
+      tile.add(front, back, foot);
+      scene.add(tile);
+
+      // ---------- Framing ----------
+      let distBoost = 1, sideShift = 0;
+      function resize() {
+        const w = armCanvas.clientWidth, h = armCanvas.clientHeight;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        distBoost = Math.min(1.9, Math.max(1, 0.75 / camera.aspect + 0.25));
+        scene.fog.near = 11 * distBoost; scene.fog.far = 21 * distBoost;
+        // On wide screens the hero text owns the left side, so the arm starts right of centre
+        sideShift = camera.aspect > 1.2 ? Math.min(0.2, 0.12 + (camera.aspect - 1.2) * 0.15) : 0;
+        camera.updateProjectionMatrix();
+      }
+      addEventListener('resize', resize);
+      resize();
+
+      // ---------- IK + render ----------
+      const A = new Array(6), K = new Array(7);
+      const q = new THREE.Quaternion();
+      const X = new THREE.Vector3(), Z0 = new THREE.Vector3(), N = new THREE.Vector3(), C = new THREE.Vector3();
+      const target = new THREE.Vector3();
+      const faceCenter = new THREE.Vector3(), faceNormal = new THREE.Vector3(), closePos = new THREE.Vector3();
+      const clock = new THREE.Clock();
+
+      function pose(t, calm) {
+        armAt(t, A);
+        const [x, y, z, phi, face, grip] = A;
+        const bob = Math.sin(clock.getElapsedTime() * 1.3) * 0.01 * calm * smooth(Math.abs(t - PICK_T) * 4);
+        const a = Math.atan2(z, x), r = Math.hypot(x, z);
+        turntable.rotation.y = -a;
+
+        // Two-link planar IK (elbow up) to put the wrist where the tool needs it
+        const wr = r - T * Math.cos(phi);
+        const wy = y + bob - T * Math.sin(phi) - H;
+        const D = clamp(Math.hypot(wr, wy), Math.abs(L1 - L2) + 1e-3, L1 + L2 - 1e-3);
+        const a1 = Math.atan2(wy, wr) + Math.acos(clamp((L1 * L1 + D * D - L2 * L2) / (2 * L1 * D), -1, 1));
+        const a2 = Math.atan2(wy - L1 * Math.sin(a1), wr - L1 * Math.cos(a1));
+        shoulder.rotation.z = a1;
+        elbow.rotation.z = a2 - a1;
+        wrist.rotation.z = phi - a2;
+
+        // Roll the tool so whatever it holds faces along `face` (world heading)
+        rollGroup.rotation.x = 0;
+        arm.updateMatrixWorld(true);
+        rollGroup.getWorldQuaternion(q);
+        X.set(1, 0, 0).applyQuaternion(q);
+        Z0.set(0, 0, 1).applyQuaternion(q);
+        N.set(Math.sin(face), 0, Math.cos(face));
+        N.addScaledVector(X, -X.dot(N));
+        if (N.lengthSq() > 1e-6) {
+          N.normalize();
+          rollGroup.rotation.x = Math.atan2(X.dot(C.crossVectors(Z0, N)), Z0.dot(N));
+        }
+        fingers.forEach(f => { f.position.z = f.userData.side * (grip / 2 + 0.018); });
+        rollGroup.updateMatrixWorld(true);
+
+        if (t >= PICK_T) {
+          tileSocket.getWorldPosition(tile.position);
+          tileSocket.getWorldQuaternion(tile.quaternion);
+        } else {
+          tile.position.set(STAND.x, TILE_TOP, STAND.z);
+          tile.quaternion.identity();
+        }
+      }
+
+      whileVisible(document.querySelector('.stage'), () => {
+        const [theta, phi, dist, tx, ty, tz, zoom] = camAt(state.time, K);
+        pose(state.time, 1 - zoom);
+
+        target.set(tx, ty, tz);
+        const d = dist * distBoost;
+        camera.position.set(
+          target.x + d * Math.sin(phi) * Math.sin(theta),
+          target.y + d * Math.cos(phi),
+          target.z + d * Math.sin(phi) * Math.cos(theta)
+        );
+
+        // Push-in: dolly straight down the tile's normal at an exponential rate (constant perceived speed)
+        if (zoom > 0) {
+          tile.updateMatrixWorld();
+          faceCenter.set(0, -TILE.h / 2, TILE.d / 2).applyMatrix4(tile.matrixWorld);
+          faceNormal.set(0, 0, 1).applyQuaternion(tile.quaternion);
+          const start = 5.6 * distBoost;
+          closePos.copy(faceCenter).addScaledVector(faceNormal, start * Math.pow(0.1 / start, zoom));
+          const w = smooth(zoom / 0.15);
+          camera.position.lerp(closePos, w);
+          target.lerp(faceCenter, w);
+        }
+        camera.lookAt(target);
+        const shift = sideShift * (1 - smooth(state.time / 2.4));
+        if (shift > 0.001) {
+          const w = armCanvas.clientWidth, h = armCanvas.clientHeight;
+          camera.setViewOffset(w, h, -shift * w, 0, w, h);
+        } else if (camera.view && camera.view.enabled) camera.clearViewOffset();
+        renderer.render(scene, camera);
+      });
+      requestAnimationFrame(() => armCanvas.classList.add('ready'));
+    }
+
+    // =====================================================================
+    // Work: an AMR drives the lane under the project cards
+    // =====================================================================
+    const work = { progress: 0 };
+    const amrCanvas = document.getElementById('amr');
+    const amrRenderer = makeRenderer(amrCanvas);
+
+    if (amrRenderer) {
+      const renderer = amrRenderer;
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
+      scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(renderer), 0.04).texture;
+
+      const key = new THREE.DirectionalLight(0xffffff, 1.6);
+      key.position.set(3, 8, 5);
+      key.castShadow = true;
+      key.shadow.mapSize.set(2048, 1024);
+      Object.assign(key.shadow.camera, { left: -6, right: 6, top: 3, bottom: -3, near: 1, far: 20 });
+      key.shadow.radius = 8;
+      scene.add(key);
+
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 20), new THREE.ShadowMaterial({ opacity: 0.16 }));
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const { shell, dark, metal, accent } = makeMaterials();
+      const amr = new THREE.Group();
+      scene.add(amr);
+      const body = new THREE.Group();          // pitches on acceleration; wheels stay on the floor
+      amr.add(body);
+
+      const chassis = mesh(new RoundedBoxGeometry(1.7, 0.34, 1.1, 5, 0.12), shell);
+      chassis.position.y = 0.36;
+      body.add(chassis);
+      const skirt = mesh(new RoundedBoxGeometry(1.62, 0.14, 1.02, 3, 0.05), dark);
+      skirt.position.y = 0.17;
+      body.add(skirt);
+      const band = mesh(new RoundedBoxGeometry(1.705, 0.022, 1.105, 3, 0.01), accent);
+      band.position.y = 0.25;
+      body.add(band);
+      const deck = mesh(new RoundedBoxGeometry(1.5, 0.03, 0.94, 2, 0.012), dark);
+      deck.position.y = 0.54;
+      body.add(deck);
+      const bumper = mesh(new RoundedBoxGeometry(0.05, 0.1, 0.8, 2, 0.02), dark);
+      bumper.position.set(0.86, 0.34, 0);
+      body.add(bumper);
+      for (const z of [-0.22, 0.22]) {
+        const eye = cyl(0.025, 0.025, 0.02, metal, 'x', 16);
+        eye.position.set(0.89, 0.34, z);
+        body.add(eye);
+      }
+      const tote = mesh(new RoundedBoxGeometry(0.78, 0.3, 0.7, 3, 0.04), new THREE.MeshStandardMaterial({ color: 0x2a2a2e, roughness: 0.55 }));
+      tote.position.set(-0.28, 0.705, 0);
+      body.add(tote);
+      const toteTag = mesh(new THREE.BoxGeometry(0.2, 0.06, 0.01), accent);
+      toteTag.position.set(-0.28, 0.75, 0.356);
+      body.add(toteTag);
+
+      // Lidar: puck with a spinning head and a translucent scan wedge
+      const lidar = new THREE.Group();
+      lidar.position.set(0.52, 0.55, 0);
+      body.add(lidar);
+      lidar.add(cyl(0.11, 0.12, 0.05, dark).translateY(0.025));
+      const head = cyl(0.09, 0.09, 0.1, dark);
+      head.position.y = 0.1;
+      lidar.add(head);
+      const headWindow = mesh(new THREE.TorusGeometry(0.091, 0.012, 8, 48), accent);
+      headWindow.rotation.x = Math.PI / 2; headWindow.position.y = 0.1;
+      lidar.add(headWindow);
+      const sweep = new THREE.Mesh(
+        new THREE.CircleGeometry(3.2, 40, -0.3, 0.6),
+        new THREE.MeshBasicMaterial({ color: 0xff5a1f, transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide })
+      );
+      sweep.rotation.x = -Math.PI / 2;
+      const sweepPivot = new THREE.Group();
+      sweepPivot.position.y = 0.1;
+      sweepPivot.add(sweep);
+      lidar.add(sweepPivot);
+
+      const wheels = [];
+      for (const x of [-0.52, 0.52]) for (const z of [-0.5, 0.5]) {
+        const w = new THREE.Group();
+        w.position.set(x, 0.13, z);
+        w.add(cyl(0.13, 0.13, 0.09, dark, 'z', 32));
+        const hub = cyl(0.06, 0.06, 0.095, metal, 'z', 24);
+        w.add(hub);
+        const spoke = mesh(new THREE.BoxGeometry(0.2, 0.025, 0.096), metal);
+        w.add(spoke);
+        amr.add(w);
+        wheels.push(w);
+      }
+
+      // Floor markings scroll past as the AMR drives: dashed nav path, lane tape, fiducial tags
+      const SPAN = 36;
+      const marks = [];
+      const addMarks = (geo, mat, spacing, z, y = 0.002) => {
+        const n = Math.ceil(SPAN / spacing);
+        const im = new THREE.InstancedMesh(geo, mat, n);
+        im.receiveShadow = true;
+        scene.add(im);
+        marks.push({ im, n, spacing, z, y });
+      };
+      const flat = (w, d) => new THREE.PlaneGeometry(w, d).rotateX(-Math.PI / 2);
+      addMarks(flat(0.38, 0.04), new THREE.MeshBasicMaterial({ color: 0xff5a1f }), 0.7, 0);
+      addMarks(flat(1.6, 0.06), new THREE.MeshBasicMaterial({ color: 0x141416 }), 2.2, -0.95);
+      addMarks(flat(1.6, 0.06), new THREE.MeshBasicMaterial({ color: 0x141416 }), 2.2, 0.95);
+      addMarks(flat(0.22, 0.22), new THREE.MeshBasicMaterial({ color: 0xc9c6bd }), 3.1, -1.5);
+      const m4 = new THREE.Matrix4();
+
+      function resize() {
+        const w = amrCanvas.clientWidth, h = amrCanvas.clientHeight;
+        if (!w || !h) return;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        // Keep the AMR a sensible size whatever the lane's shape
+        const dist = camera.aspect < 1.5 ? 10 : 7.2;
+        camera.position.set(0, dist * 0.32, dist);
+        camera.lookAt(0, 0.35, 0);
+        camera.updateProjectionMatrix();
+      }
+      addEventListener('resize', resize);
+      resize();
+
+      // Easter egg: click the AMR and it spins on the spot like it just reached a Nav2 goal
+      const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+      const toastEl = document.getElementById('amr-toast');
+      const SPIN = 1.8;
+      let spinAt = -1;
+      const overAMR = e => {
+        const r = amrCanvas.getBoundingClientRect();
+        ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+        ray.setFromCamera(ndc, camera);
+        return ray.intersectObject(amr, true).length > 0;
+      };
+      amrCanvas.addEventListener('pointermove', e => { amrCanvas.style.cursor = overAMR(e) ? 'pointer' : ''; });
+      amrCanvas.addEventListener('click', e => {
+        if (spinAt >= 0 || !overAMR(e)) return;
+        spinAt = clock.elapsedTime;
+        gsap.timeline()
+          .fromTo(toastEl, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power2.out' }, SPIN * 0.7)
+          .to(toastEl, { autoAlpha: 0, y: -8, duration: 0.3, ease: 'power1.in' }, SPIN * 0.7 + 1.6);
+      });
+
+      const clock = new THREE.Clock();
+      let travel = 0, prevTravel = 0, vel = 0, lead = 0, pitch = 0, lidarAngle = 0;
+      whileVisible(amrCanvas, () => {
+        const dt = Math.min(clock.getDelta(), 0.05) || 0.016;
+        const t = clock.elapsedTime;
+        // Distance driven follows the scroll; the body leads/lags and pitches with speed changes
+        const goal = work.progress * 26;
+        travel += (goal - travel) * Math.min(1, dt * 6);
+        const v = (travel - prevTravel) / dt;
+        prevTravel = travel;
+        const acc = (v - vel) / dt;
+        vel = v;
+        lead += (clamp(v * 0.08, -0.8, 1.2) - lead) * Math.min(1, dt * 3);
+        pitch += (clamp(-acc * 0.0015, -0.05, 0.05) - pitch) * Math.min(1, dt * 5);
+
+        // Spin: eased full turn, wheels counter-rotate side to side, lidar and status band flare
+        let spin = 0, flare = 0;
+        if (spinAt >= 0) {
+          const p = (t - spinAt) / SPIN;
+          if (p >= 1) spinAt = -1;
+          else { spin = Math.PI * 2 * (p < 0.5 ? 4 * p ** 3 : 1 - (-2 * p + 2) ** 3 / 2); flare = Math.sin(Math.PI * p); }
+        }
+        amr.rotation.y = spin;
+        amr.position.x = -1.6 + lead;
+        body.rotation.z = pitch;
+        body.position.y = Math.sin(t * 9) * 0.002 * Math.min(1, Math.abs(v));
+        wheels.forEach(w => { w.rotation.z = -travel / 0.13 + Math.sign(w.position.z) * spin * 3; });
+        lidarAngle += dt * (6 + 4 * flare);
+        head.rotation.y = lidarAngle;
+        sweepPivot.rotation.y = lidarAngle - spin;   // keep the scan steady in the world while the body turns
+        sweep.material.opacity = 0.1 + 0.12 * flare;
+        sweepPivot.scale.setScalar(1 + 0.25 * flare);
+        accent.emissiveIntensity = 0.8 + 1.2 * flare;
+
+        for (const { im, n, spacing, z, y } of marks) {
+          for (let i = 0; i < n; i++) {
+            const x = ((((i * spacing - travel) % SPAN) + SPAN) % SPAN) - SPAN / 2;
+            m4.makeTranslation(x, y, z);
+            im.setMatrixAt(i, m4);
+          }
+          im.instanceMatrix.needsUpdate = true;
+        }
+        renderer.render(scene, camera);
+      });
+    }
+
+    // =====================================================================
+    // Scroll
+    // =====================================================================
+    gsap.registerPlugin(ScrollTrigger);
+
+    let lenis = null;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && window.Lenis) {
+      lenis = new Lenis({ lerp: 0.085, smoothWheel: true });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(time => lenis.raf(time * 1000));
+      gsap.ticker.lagSmoothing(0);
+    }
+
+    // Intro: scroll drives one clock; the tracks turn it into motion
+    const intro = gsap.timeline({ paused: true });
+    intro.to(state, { time: END, duration: END, ease: 'none' }, 0)
+      .to('.hero', { autoAlpha: 0, y: -40, duration: 0.6, ease: 'power1.in' }, 0)
+      .to('.handoff', { opacity: 1, duration: 0.45, ease: 'power1.in' }, ZOOM[1] - 0.5);
+    document.getElementById('story').style.height = `${Math.round(END * 70 + 100)}vh`;
+    const header = document.querySelector('header');
+    const introST = ScrollTrigger.create({ animation: intro, trigger: '#story', start: 'top top', end: 'bottom bottom', scrub: 1 });
+    const lightST = ScrollTrigger.create({ trigger: '.light', start: 'top 32px', end: 'bottom 32px' });
+    // Dark nav once the paper has filled the intro stage, and over the light sections
+    const updateHeader = () => {
+      const from = introST.start + (introST.end - introST.start) * (ZOOM[1] - 0.15) / END;
+      header.classList.toggle('on-light', scrollY + 32 >= from && scrollY + 32 < lightST.end + 32);
+      header.classList.toggle('solid', scrollY >= introST.end);
+    };
+    ScrollTrigger.addEventListener('refresh', updateHeader);
+    gsap.ticker.add(updateHeader);
+
+    // Work: vertical scroll becomes horizontal travel across the cards
+    const workEl = document.getElementById('work');
+    const countEl = document.getElementById('count');
+    const travelPx = () => {
+      const last = trackEl.lastElementChild;
+      return Math.max(0, last.offsetLeft + last.offsetWidth + parseFloat(getComputedStyle(trackEl).paddingLeft) - innerWidth);
+    };
+    const sizeWork = () => { workEl.style.height = `${innerHeight + travelPx() * 1.6}px`; };
+    sizeWork();
+    addEventListener('resize', sizeWork);
+    gsap.to(trackEl, {
+      x: () => -travelPx(), ease: 'none',
+      scrollTrigger: {
+        trigger: workEl, start: 'top top', end: 'bottom bottom', scrub: 0.6, invalidateOnRefresh: true,
+        onUpdate: self => {
+          work.progress = self.progress;
+          countEl.textContent = pad(Math.min(PROJECTS.length, 1 + Math.round(self.progress * (PROJECTS.length - 1))));
+        },
+      },
+    });
+    ScrollTrigger.refresh();
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+      const el = document.querySelector(a.getAttribute('href'));
+      if (!el) return;
+      e.preventDefault();
+      lenis ? lenis.scrollTo(el, { duration: 2 }) : el.scrollIntoView({ behavior: 'smooth' });
+    }));
+  </script>
+  <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3f3516062f8647aea7cca3822269b05c"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
